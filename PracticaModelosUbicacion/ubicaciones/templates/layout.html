@@ -1,0 +1,48 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type = "text/css" href="{%static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>
+        {% block title%}
+        {%endblock%} | Page
+    </title>
+    
+</head>
+<body>
+    <header id="main-header">
+        <a id="logo-header " href="#">
+            <img src="https://graffica.info/wp-content/uploads/2017/07/Pizza_Hut_Logo_3.png" width="70px" class="w-10" alt="Logo">
+        </a> <!-- / #logo-header -->
+    
+        <nav>
+            <ul>
+                <li><a href="/inicio">Inicio</a></li>
+                <li><a href="/ubicaciones">Ubicaciones</a></li>
+                <li><a href="/metricas">Metricas</a></li>
+            </ul>
+        </nav><!-- / nav -->
+    
+    </header><!-- / #main-header -->
+    
+    
+    <section id="main-content">
+        <article>
+            <div id = "content">
+                {%block content %}
+                {%endblock%}
+            </div>  
+        </article>	<!-- / article -->
+    </section><!-- / #main-content -->
+    
+    <footer id="main-footer">
+        <p>&copy; Los Fundadores</h1></p>
+    </footer><!-- / #main-footer -->
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+</html>
