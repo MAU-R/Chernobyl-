@@ -20,7 +20,7 @@ from ubicaciones import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("",views.index, name = "index"),
+    path("",views.inicio, name = "index"),
     path("inicio/", views.inicio, name="inicio"),
     path("ubicaciones/", views.ubicaciones, name="ubicaciones"),
     path("crearUbicacion/<str:color>/<str:nombre>/<str:descripcion>/<str:longitud>/<str:latitud>", views.crear_ubicacion, name="crear-ubicacion"),
