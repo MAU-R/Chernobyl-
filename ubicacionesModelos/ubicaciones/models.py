@@ -1,4 +1,6 @@
 from django.db import models
+from django.shortcuts import redirect
+
 
 
 class franquicias(models.Model):
@@ -22,3 +24,4 @@ class kmeansOpciones(models.Model):
 class detalleKPoblaciones(models.Model):
     idPoblacion=models.IntegerField()
     idKmeans=models.IntegerField()
+    

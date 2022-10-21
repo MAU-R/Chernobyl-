@@ -6,26 +6,30 @@
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 <link rel="stylesheet" type = "text/css" href="{%static 'css/modulosKmeans.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<div class="contenedor">
-    <div id="map"></div>
-    <section class="controles">
-        <form action="/crearPoblaciones/" method="get">
-            <label for="Rango">Rango de longitud</label><br/>
-            <input id="lngInicio" type="text" name="lngInicio" value="" placeholder="inico"><br/>
-            <input id="lngFinal" type="text" name="lngFinal" value="" placeholder="final"><hr/>
-            <label for="Rango">Rango de latitud</label><br/>
-            <input id="latInicio" type="text" name="latInicio" value="" placeholder="inico"><br/>
-            <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
-            <label for="cantidad">Cantidad</label><br/>
-            <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
-            <label for="">dispersion</label><br/>
-            <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
-            <label for="centros">centros</label><br/>
-            <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
-            <input type="submit" value="Agregar">
-        </form>
-    </section>
-</div>
+    <div class="contenedor">
+        <div class="mapon" id="map"></div>
+        
+        <section class="controles">
+            <form action="/crearPoblaciones/" method="get">
+                <label for="Rango">Rango de longitud</label><br/>
+                <input id="lngInicio" type="text" name="lngInicio" value="" placeholder="inico"><br/>
+                <input id="lngFinal" type="text" name="lngFinal" value="" placeholder="final"><hr/>
+                <label for="Rango">Rango de latitud</label><br/>
+                <input id="latInicio" type="text" name="latInicio" value="" placeholder="inico"><br/>
+                <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
+                <label for="cantidad">Cantidad</label><br/>
+                <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
+                <label for="">dispersion</label><br/>
+                <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
+                <label for="centros">centros</label><br/>
+                <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
+                <input type="submit" value="Agregar">
+            </form>
+        </section>
+    </div><br/><br/><br/><br/><hr/>
+    </div>
+    
+
 <script>
     var longitude1 = "{{longitude1}}"
     var map = L.map('map').
@@ -37,67 +41,42 @@
         maxZoom: 2
     }).addTo(map);
     L.control.scale().addTo(map);
-</script>  
-
-<script>
-
-
-    var dat = "{{datos|escapejs}}"
-    var arreglo=dat.split('{')
-    arreglo.splice(0,1)
-    console.log(arreglo)
-    arreglo.forEach(ubicacion => {
-     
-        var ubi = ubicacion.split(',');
-        console.log("Ahora que onda con la ubic")
-        console.log(ubi)
-        var col= ubi[1].split(':');
-        var col0=col[1].slice(0,-1)
-        var col1 = col0.replace("'","")
-        var col2='#'
-        var col2= col2.concat(col1)
-        console.log("Ahora que onda con el color ahorita")
-        console.log(col1)
-        const myCustomColour = col1
-
-        const markerHtmlStyles = `
-        background-color: ${myCustomColour};
-        width: 3rem;
-        height: 3rem;
-        display: block;
-        left: -1.5rem;
-        top: -1.5rem;
-        position: relative;
-        border-radius: 3rem 3rem 0;
-        transform: rotate(45deg);
-        border: 1px solid #FFFFFF`
-
-        const Myicon = L.divIcon({
-        className: "my-custom-pin",
-        iconAnchor: [0, 24],
-        labelAnchor: [-6, 0],
-        popupAnchor: [0, -36],
-        html: `<span style="${markerHtmlStyles}" />`
-        })
-        console.log("pin puesto")
-        var long= ubi[5].split(':');
-        var lng0=long[1].slice(0,-1)
-        var lng1 = lng0.replace("'","")
-        var lng2=lng1.slice(0,-1)
-       
-       
-       var lant= ubi[4].split(':');
-       var lat0= lant[1].slice(0,-1)
-        var lat1 = lat0.replace("'","")
-        var lat2=lat1.replace("'","")
-        var lat = lat2.slice(0,-1);
-       var lng = lng2.slice(0,-1);
-       console.log(lat)
-       console.log(lng)
-        L.marker([lat, lng], {icon:Myicon,}).addTo(map);  
-    });
-   
 </script>
+{%for locacion in locaciones%}  
+<script>
+    //Conseguir variables del context
+    var index="{{locacion.id}}"
+    var longitudes="{{ locacion.longitudes }}" 
+    var latitudes="{{ locacion.latitudes }}" 
+    var lngArray=longitudes.split(',');
+    var latArray=latitudes.split(',');
+    console.log("aqui")
+   // console.log(lngArray)
+    //Insertar html que se generar
+
+    //Crear el mapa en el html insertado
+    
+
+    for(var i = 0; i<lngArray.length; i++){
+        console.log(lngArray[i])
+        //console.log("latitudes")
+       // console.log(latArray[i])
+        const longitud = +(lngArray[i])
+        const latitud = +(latArray[i])
+        L.marker([latitud,longitud], {draggable: true}).addTo(map); 
+    }
+
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng) // Sets the geographical point where the popup will open.
+            .setContent("Has hecho click en la coordenada:<br> " +  e.latlng.lat.toString() + "," +  e.latlng.lng.toString()) // Sets the HTML content of the popup.
+            .openOn(map); // Adds the popup to the map and closes the previous one. 
+    }
+    
+    map.on('click', onMapClick);
+</script>
+{%endfor%}
  
 <script>
     var popup = L.popup();

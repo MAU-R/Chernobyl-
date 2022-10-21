@@ -4,7 +4,7 @@ from tkinter.messagebox import RETRY
 from django.shortcuts import render, HttpResponse, redirect
 from django.template import loader
 from sklearn.datasets import make_blobs
-from .models import franquicias as franquicias
+from .models import franquicias as franquicias, kmeansOpciones
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
 from sklearn.cluster import KMeans
@@ -22,6 +22,17 @@ def generateLocations(cantidad,inicio,final, centeros, dispersion):
                    random_state = 0)
     return x[:,0]
 
+
+def generateLocations2(cantidad,inicio,final,inicioln,finallng, centeros, dispersion):
+    x, y = make_blobs(
+                  n_samples = cantidad, 
+                  n_features = 2, 
+                  centers = centeros,
+                  cluster_std=dispersion,
+                  shuffle= True,  
+                  center_box=([inicio,inicioln],[final,finallng]),
+                   random_state = 0)
+    return x
 
 def generarKmeans(clusters, iteraciones, tolerancia, state):
     km = KMeans(
@@ -55,15 +66,16 @@ def ubicaciones(request):
     return render(request, 'ubicaciones.html', context = mydict)
 @csrf_exempt
 def agregarPoblaciones(request):
-    lngInicio=int(request.GET["lngInicio"])
-    lngFInal=int(request.GET["lngFinal"])
-    latInicio=int(request.GET["latInicio"])
-    latFInal=int(request.GET["latFinal"])
+    lngInicio=float(request.GET["lngInicio"])
+    lngFInal=float(request.GET["lngFinal"])
+    latInicio=float(request.GET["latInicio"])
+    latFInal=float(request.GET["latFinal"])
     cantidad=int(request.GET["cantidad"])
     centros=int(request.GET["centros"])
-    dispersion=int(request.GET["centros"])
-    longitudes=generateLocations(cantidad, lngInicio,lngFInal,centros,dispersion)
-    latitudes=generateLocations(cantidad, latInicio,latFInal,centros,dispersion)
+    dispersion=float(request.GET["centros"])
+    cordenadas=generateLocations2(cantidad, latInicio,latFInal,lngInicio,lngFInal,centros,dispersion)
+    longitudes=cordenadas[:,1]
+    latitudes=cordenadas[:,0]
     strlong = ','.join(str(x) for x in longitudes)
     strlat = ','.join(str(x) for x in latitudes)
     poblacion= poblacionesModelo(
@@ -71,30 +83,30 @@ def agregarPoblaciones(request):
         latitudes=strlat
     )
     poblacion.save()
-    return render(request, 'poblaciones.html')
-
+    return redirect(poblaciones)
+@csrf_exempt
 def crearKmeans(request):
-    clusters=int(request.GET["clusters"])
-    iteraciones=int(request.GET["iteraciones"])
-    tolerancia=int(request.GET["tolerancia"])
-    state=int(request.GET["state"])
-    
-    strlong = ','.join(str(x) for x in longitudes)
-    strlat = ','.join(str(x) for x in latitudes)
-    poblacion= poblacionesModelo(
-        longitudes=strlong,
-        latitudes=strlat
+    clusters=int(request.POST["numero"])
+    iteraciones=int(request.POST["iteraciones"])
+    tolerancia=float(request.POST["tolerancia"])
+    state=int(request.POST["state"])
+
+    kmeansModelo=kmeansOpciones(
+    clusters=clusters,
+    tolerancia=tolerancia,
+    iteraciones=iteraciones,
+    state=state
     )
-    poblacion.save()
-    return render(request, 'kmeans.html')
+    kmeansModelo.save()
+    return redirect(kmeans)
 
 def poblaciones(request):
-
-    return render(request, 'poblaciones.html')
+    locaciones=poblacionesModelo.objects.all()
+    return render(request, 'poblaciones.html' ,{"locaciones": locaciones})
 
 def kmeans(request):
-    longitudes=generateLocations(10,10,20,3,0.1)
-    latitudes=generateLocations(10,10,20,3,0.1)
+    if(kmeansOpciones.objects.last()):
+        kmeans= kmeansOpciones.objects.last()
     return render(request, 'kmeans.html')
 
 def metricas(request):
@@ -140,4 +152,9 @@ def eliminar(request,id):
 
     ubicacion.delete()
     return HttpResponse("borrado ubicacion borrado")
-    
+
+def eliminadoDefinitivo(request):
+   pobs=poblacionesModelo.objects.all().delete()
+   k=kmeansOpciones.objects.all().delete()
+
+   return redirect(inicio)

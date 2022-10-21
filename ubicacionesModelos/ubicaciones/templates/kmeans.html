@@ -9,15 +9,16 @@
 <div class="contenedor">
     <div id="map"></div>
     <section class="controles">
-        <form action="/crearKmeans/" method="get">
-            <label for="Rango">clusters</label><br/>
-            <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
-            <label for="cantidad">Cantidad iteraciones</label><br/>
-            <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
+        <form action="/crearKmeans/" method="post">
+            
+            <label for="cluster">clusters</label><br/>
+            <input id="numero" type="text" name="numero" value="" placeholder="numero clusters"><hr/>
+            <label for="iteraciones">cantidad iteraciones</label><br/>
+            <input id="iteraciones" type="number" name="iteraciones" value="" placeholder="000"><hr/>
             <label for="">tolerancia</label><br/>
-            <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
-            <label for="centros">random state</label><br/>
-            <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
+            <input id="tolerancia" type="text" name="tolerancia" value="" placeholder="0.00"><hr/>
+            <label for="state">random state</label><br/>
+            <input id="state" type="number" min="0.000000001" name="state" value="" placeholder="000"><hr/>
             <input type="submit" value="Agregar">
         </form>
     </section>

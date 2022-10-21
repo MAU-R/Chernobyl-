@@ -28,6 +28,7 @@ urlpatterns = [
     path("metricas/", views.metricas, name="metricas"),
     path("crearPoblaciones/", views.agregarPoblaciones, name="crearPoblacion"),
     path("crearKmeans/", views.crearKmeans, name="crearKmeans"),
+    path("eliminadoDefinitivo/", views.eliminadoDefinitivo, name="borrador"),
     path("crearUbicacion/<str:color>/<str:nombre>/<str:descripcion>/<str:longitud>/<str:latitud>", views.crear_ubicacion, name="crear-ubicacion"),
     path("actualizar/<int:id>/<str:color>/<str:nombre>/<str:descripcion>/<str:longitud>/<str:latitud>", views.actualizar_ubicacion, name="crear-ubicacion"),
     path("eliminar/<int:id>",views.eliminar,name="eliminar")
