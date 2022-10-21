@@ -1,13 +1,31 @@
 {% extends 'layout.html'%}
 
 {%block title%}ubicaciones{%endblock%}
-
+{%load static%}
 {%block content%}
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" type = "text/css" href="{%static 'css/modulosKmeans.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-
-<div id="map"></div>
-
+<div class="contenedor">
+    <div id="map"></div>
+    <section class="controles">
+        <form action="/crearPoblaciones/" method="get">
+            <label for="Rango">Rango de longitud</label><br/>
+            <input id="lngInicio" type="text" name="lngInicio" value="" placeholder="inico"><br/>
+            <input id="lngFinal" type="text" name="lngFinal" value="" placeholder="final"><hr/>
+            <label for="Rango">Rango de latitud</label><br/>
+            <input id="latInicio" type="text" name="latInicio" value="" placeholder="inico"><br/>
+            <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
+            <label for="cantidad">Cantidad</label><br/>
+            <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
+            <label for="">dispersion</label><br/>
+            <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
+            <label for="centros">centros</label><br/>
+            <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
+            <input type="submit" value="Agregar">
+        </form>
+    </section>
+</div>
 <script>
     var longitude1 = "{{longitude1}}"
     var map = L.map('map').

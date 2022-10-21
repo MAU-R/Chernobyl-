@@ -13,8 +13,12 @@ class poblaciones(models.Model):
     latitudes=models.TextField()
 
 class kmeansOpciones(models.Model):
-    longitudes=models.TextField()
+    clusters=models.IntegerField()
+    tolerancia=models.FloatField()
+    iteraciones=models.IntegerField()
+    state=models.IntegerField()
     
+
 class detalleKPoblaciones(models.Model):
     idPoblacion=models.IntegerField()
     idKmeans=models.IntegerField()

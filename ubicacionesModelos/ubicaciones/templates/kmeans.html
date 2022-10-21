@@ -1,13 +1,27 @@
 {% extends 'layout.html'%}
 
 {%block title%}ubicaciones{%endblock%}
-
+{%load static%}
 {%block content%}
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" type = "text/css" href="{%static 'css/modulosKmeans.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-
-<div id="map"></div>
-
+<div class="contenedor">
+    <div id="map"></div>
+    <section class="controles">
+        <form action="/crearKmeans/" method="get">
+            <label for="Rango">clusters</label><br/>
+            <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
+            <label for="cantidad">Cantidad iteraciones</label><br/>
+            <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
+            <label for="">tolerancia</label><br/>
+            <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
+            <label for="centros">random state</label><br/>
+            <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
+            <input type="submit" value="Agregar">
+        </form>
+    </section>
+</div>
 <script>
     var longitude1 = "{{longitude1}}"
     var map = L.map('map').

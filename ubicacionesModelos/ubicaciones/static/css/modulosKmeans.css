@@ -1,0 +1,19 @@
+.contenedor{
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap:30px;
+}
+#map{
+grid-column: 1/4;
+padding: 70px;
+}
+.controles{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#content{
+    width: 100vw !important;
+}
