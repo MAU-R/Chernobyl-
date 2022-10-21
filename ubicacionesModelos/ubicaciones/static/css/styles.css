@@ -47,7 +47,7 @@ img {
 	background: black;
 	color: white;
 	height: 80px;
-	
+	z-index: 100000;
 	width: 100%;
 	left: 0;
 	top: 0;
@@ -121,10 +121,9 @@ nav {
 //------------------------------
 ************/
 #main-content {
+	width: 100vw;
 	background: white;
-	width: 90%;
-	max-width: 800px;
-	margin: 20px auto;
+	width: 100%;
 	box-shadow: 0 0 10px rgba(0,0,0,.1);
 }
 

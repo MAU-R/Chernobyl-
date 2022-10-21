@@ -1,0 +1,21 @@
+.contenedor{
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap:30px;
+}
+.mapon{
+grid-column: 1/4;
+padding: 70px;
+min-width: 50vw;
+min-height: 80vh;
+}
+.controles{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#content{
+    width: 100vw !important;
+}

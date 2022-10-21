@@ -1,4 +1,6 @@
 from django.db import models
+from django.shortcuts import redirect
+
 
 
 class franquicias(models.Model):
@@ -7,3 +9,19 @@ class franquicias(models.Model):
     Descripcion=models.CharField(max_length=100)
     latitud=models.CharField(max_length=100)
     longitude=models.CharField(max_length=100)
+
+class poblaciones(models.Model):
+    longitudes=models.TextField()
+    latitudes=models.TextField()
+
+class kmeansOpciones(models.Model):
+    clusters=models.IntegerField()
+    tolerancia=models.FloatField()
+    iteraciones=models.IntegerField()
+    state=models.IntegerField()
+    
+
+class detalleKPoblaciones(models.Model):
+    idPoblacion=models.IntegerField()
+    idKmeans=models.IntegerField()
+    
