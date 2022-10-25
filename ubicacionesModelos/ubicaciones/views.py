@@ -7,8 +7,8 @@ from sklearn.datasets import make_blobs
 from .models import franquicias as franquicias, kmeansOpciones
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
+import numpy 
 from sklearn.cluster import KMeans
-import re
 from django.views.decorators.csrf import csrf_exempt
 
 def generateLocations(cantidad,inicio,final, centeros, dispersion):
@@ -64,6 +64,7 @@ def ubicaciones(request):
         'datos':listo
     }
     return render(request, 'ubicaciones.html', context = mydict)
+
 @csrf_exempt
 def agregarPoblaciones(request):
     lngInicio=float(request.GET["lngInicio"])
@@ -84,6 +85,8 @@ def agregarPoblaciones(request):
     )
     poblacion.save()
     return redirect(poblaciones)
+
+
 @csrf_exempt
 def crearKmeans(request):
     clusters=int(request.POST["numero"])
@@ -100,14 +103,17 @@ def crearKmeans(request):
     kmeansModelo.save()
     return redirect(kmeans)
 
+
 def poblaciones(request):
     locaciones=poblacionesModelo.objects.all()
     return render(request, 'poblaciones.html' ,{"locaciones": locaciones})
+
 
 def kmeans(request):
     if(kmeansOpciones.objects.last()):
         kmeans= kmeansOpciones.objects.last()
     return render(request, 'kmeans.html')
+
 
 def metricas(request):
     PDB = pd.read_csv("apptest/database/pizzahut.csv")
@@ -121,6 +127,7 @@ def metricas(request):
     }
     return render(request,"metricas.html", context=mydict2)
   
+
 #http://127.0.0.1:8000/crearUbicacion/color/mau/aqui/10/10
 def crear_ubicacion(request, color, nombre, descripcion,latitud, longitud):
     gato="#"
@@ -136,6 +143,7 @@ def crear_ubicacion(request, color, nombre, descripcion,latitud, longitud):
     ubicacion.save()
     return HttpResponse("creado ubicacion creado")
 
+
 def actualizar_ubicacion(request,id, color, nombre, descripcion,latitud, longitud):
     ubicacion= franquicias.objects.get(pk=id)
     print(descripcion)
@@ -147,11 +155,13 @@ def actualizar_ubicacion(request,id, color, nombre, descripcion,latitud, longitu
     ubicacion.save()
     return HttpResponse("actualizado ubicacion actualizado")
 
+
 def eliminar(request,id):
     ubicacion= franquicias.objects.get(pk=id)
 
     ubicacion.delete()
     return HttpResponse("borrado ubicacion borrado")
+
 
 def eliminadoDefinitivo(request):
    pobs=poblacionesModelo.objects.all().delete()
