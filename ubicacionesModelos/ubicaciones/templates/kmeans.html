@@ -4,10 +4,12 @@
 {%load static%}
 {%block content%}
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNujXVEWnISL6MnLWmbx14bPGOMjfCtTU&callback=initMap">
+</script>
 <link rel="stylesheet" type = "text/css" href="{%static 'css/modulosKmeans.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<div class="contenedor">
-    <div id="map"></div>
+<div class="contenedor" id="mapas">
     <section class="controles">
         <form action="/crearKmeans/" method="post">
             
@@ -18,27 +20,191 @@
             <label for="">tolerancia</label><br/>
             <input id="tolerancia" type="text" name="tolerancia" value="" placeholder="0.00"><hr/>
             <label for="state">random state</label><br/>
-            <input id="state" type="number" min="0.000000001" name="state" value="" placeholder="000"><hr/>
+            <input id="state" type="number"  name="state" value="" placeholder="000"><hr/>
             <input type="submit" value="Agregar">
         </form>
     </section>
 </div>
+<script>var longitudesFinal=[];var latitudesFinal=[];var iconos=["http://maps.google.com/mapfiles/ms/icons/green-dot.png","http://maps.google.com/mapfiles/ms/icons/yellow-dot.png","http://maps.google.com/mapfiles/ms/icons/blue-dot.png","http://maps.google.com/mapfiles/ms/icons/ltblue-dot.png","http://maps.google.com/mapfiles/ms/icons/yellow-dot.png","http://maps.google.com/mapfiles/ms/icons/blue-dot.png","http://maps.google.com/mapfiles/ms/icons/ltblue-dot.png"];</script>
+{%for locacion in locaciones%}  
 <script>
-    var longitude1 = "{{longitude1}}"
-    var map = L.map('map').
+    var longitudes="{{ locacion.longitudes }}" 
+    var latitudes="{{ locacion.latitudes }}" 
+    var lngArray=longitudes.split(',');
+    var latArray=latitudes.split(',');
+longitudesFinal.push(lngArray);
+latitudesFinal.push(latArray)
+</script>
+{%endfor%}
+{%for k in kmeans%}  
+<script>
+    var iteraciones={{k.iteraciones}}
+    var clusters = {{k.clusters}}
+    var tolerancia = {{k.tolerancia}}
+    var index= {{k.id}}
+    var htmlString=`
+    <h1>Mapa con ${iteraciones} iteraciones, ${clusters} centros y ${tolerancia} de tolerancia</h1><hr/>
+    <div class="mapon" id="map-${index}"></div>
+    <section class="controles">
+        <form action="/crearKmeans/" method="post">
+            
+            <label for="cluster">clusters</label><br/>
+            <input id="numero" type="text" name="numero" value="" placeholder="numero clusters"><hr/>
+            <label for="iteraciones">cantidad iteraciones</label><br/>
+            <input id="iteraciones" type="number" name="iteraciones" value="" placeholder="000"><hr/>
+            <label for="">tolerancia</label><br/>
+            <input id="tolerancia" type="text" name="tolerancia" value="" placeholder="0.00"><hr/>
+            <label for="state">random state</label><br/>
+            <input id="state" type="number"  name="state" value="" placeholder="000"><hr/>
+            <input type="submit" value="Agregar">
+        </form>
+    </section><hr/>
+    `
+    document.getElementById("mapas").innerHTML+=htmlString
+</script>
+{%endfor%}
+<script>
+    console.log("lat final")
+    console.log(latitudesFinal[0])
+   /* var index="{{locacion.id}}"
+    //Conseguir variables del context
+    
+    var longitudes="{{ locacion.longitudes }}" 
+    var latitudes="{{ locacion.latitudes }}" 
+    var lngArray=longitudes.split(',');
+    var latArray=latitudes.split(',');
+    console.log("aqui")
+   // console.log(lngArray)
+    //Insertar html que se generar
+
+    //Crear el mapa en el html insertado
+    
+
+    for(var i = 0; i<lngArray.length; i++){
+        console.log(lngArray[i])
+        //console.log("latitudes")
+       // console.log(latArray[i])
+        const longitud = +(lngArray[i])
+        const latitud = +(latArray[i])
+        L.marker([latitud,longitud], {draggable: true}).addTo(map); 
+    }
+
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng) // Sets the geographical point where the popup will open.
+            .setContent("Has hecho click en la coordenada:<br> " +  e.latlng.lat.toString() + "," +  e.latlng.lng.toString()) // Sets the HTML content of the popup.
+            .openOn(map); // Adds the popup to the map and closes the previous one. 
+    }
+    
+    map.on('click', onMapClick);
+
+    var mapin="map"+index;
+    console.log(mapin)
+    var hmlString=`<div class="mapon" id="map-${index}"></div>`
+    document.getElementById("mapas").innerHTML+=hmlString
+    
+
+  /*  eval(`var ${mapin} = L.map(map-${index}).
     setView([41.66, -4.72], 
     14);
     
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-        maxZoom: 2
+        maxZoom: 100
+    }).addTo(${mapin});
+    L.control.scale().addTo(${mapin});
+
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng) // Sets the geographical point where the popup will open.
+            .setContent("Has hecho click en la coordenada:<br> " +  e.latlng.lat.toString() + "," +  e.latlng.lng.toString()) // Sets the HTML content of the popup.
+            .openOn(${mapin}); // Adds the popup to the map and closes the previous one. 
+    }
+    
+    ${mapin}.on('click', onMapClick);`)
+    /*var map = L.map(`map-${index}`).
+    setView([41.66, -4.72], 
+    14);
+    
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+        maxZoom: 100
     }).addTo(map);
     L.control.scale().addTo(map);
-</script>  
+
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng) // Sets the geographical point where the popup will open.
+            .setContent("Has hecho click en la coordenada:<br> " +  e.latlng.lat.toString() + "," +  e.latlng.lng.toString()) // Sets the HTML content of the popup.
+            .openOn(map); // Adds the popup to the map and closes the previous one. 
+    }
+    
+    map.on('click', onMapClick);*/
+</script>
 
 <script>
+    var clustersy={{centros}}
+    console.clear()
+    console.log()
+    var map;
+      function initialize() {
+        // Get all map canvas with ".maps" and store them to a variable.
+        var maps = document.getElementsByClassName("mapon");
+        console.log("cuantos mapas: "+maps.length)
+        var ids, gps, mapId = '';
 
+        // Loop: Explore all elements with ".maps" and create a new Google Map object for them
+        for(var i=0; i<maps.length; i++) {
+            var clusters=clustersy[i]
+            var renders=0
+            console.log("mapa: "+ i);
+          // Get ID of single div
+          mapId = document.getElementById(maps[i].id);
+          console.log("Aqui los cluster iteracion: "+i)
+            console.log("Aqui estan los clusters " + clusters)
+          // Get LatLng stored in data attribute. 
+          // !!! Make sure there is no space in data-attribute !!!
+          // !!! and the values are separated with comma !!!
+         // gps = mapId.getAttribute('data-gps');
 
+          // Convert LatLng to an array
+          //gps = gps.split(",");
+
+          // Create new Google Map object for single canvas 
+          map = new google.maps.Map(mapId, {
+    center: { lat: -34.397, lng: 150.644 },
+    zoom: 8,
+        });
+        
+          // Create new Google Marker object for new map
+          for(var h = 0; h<longitudesFinal.length; h++){
+               const longitudesX = (longitudesFinal[h])
+                const latitudesX = (latitudesFinal[h])
+            for(var j = 0; j<longitudesX.length; j++){
+                const longitud = +(longitudesX[j])
+                const latitud = +(latitudesX[j])
+                renders++
+                var marker = new google.maps.Marker({
+                // Use our LatLng array bellow
+                position: new google.maps.LatLng(latitud, longitud),
+                map: map,
+                icon: {
+                    url: iconos[clusters[renders]]
+                  }
+                });
+            }
+            }
+          
+        }
+      }
+</script>
+
+<script>
+window.initMap = initialize;
+/*
     var dat = "{{datos|escapejs}}"
     var arreglo=dat.split('{')
     arreglo.splice(0,1)
@@ -93,18 +259,10 @@
        console.log(lng)
         L.marker([lat, lng], {icon:Myicon,}).addTo(map);  
     });
-   
+   */
 </script>
  
 <script>
-    var popup = L.popup();
-    function onMapClick(e) {
-        popup
-            .setLatLng(e.latlng) // Sets the geographical point where the popup will open.
-            .setContent("Has hecho click en la coordenada:<br> " +  e.latlng.lat.toString() + "," +  e.latlng.lng.toString()) // Sets the HTML content of the popup.
-            .openOn(map); // Adds the popup to the map and closes the previous one. 
-    }
-    
-    map.on('click', onMapClick);
+
 </script>
 {%endblock%}

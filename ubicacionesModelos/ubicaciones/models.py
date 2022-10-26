@@ -1,14 +1,19 @@
 from django.db import models
 from django.shortcuts import redirect
-
-
+import pandas as pd
+import os
+from django.conf import settings
+from django.core.files import File
 
 class franquicias(models.Model):
     Color=models.CharField(max_length=200)
     Nombre=models.CharField(max_length=200)
     Descripcion=models.CharField(max_length=100)
     latitud=models.CharField(max_length=100)
-    longitude=models.CharField(max_length=100)
+    longitude=models.CharField(max_length=100   )    
+
+
+
 
 class poblaciones(models.Model):
     longitudes=models.TextField()
