@@ -19,3 +19,6 @@ min-height: 80vh;
 #content{
     width: 100vw !important;
 }
+.extend{
+  grid-column: 1/2;
+}
