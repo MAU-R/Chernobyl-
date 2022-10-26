@@ -89,28 +89,26 @@ def kmeans(request):
     listaKmeans=kmeans.values()
     #print(locaciones.values()[1]["longitudes"])
     clusters=[]
+    processed=[]
     for kmop in listaKmeans:
         clu=[]
+        arreglox = []
         for ubicacion in locaciones:
-            arreglox = []
             latitudes = ubicacion.latitudes.split(",")
             longitudes = ubicacion.longitudes.split(",")
             for x in range(len(longitudes)):
                 arreglox.append([float(latitudes[x]), float(longitudes[x])])
-            cent=loc.generarKmeans(int(kmop["clusters"]), int(kmop["iteraciones"]), float(kmop["tolerancia"]), float(kmop["state"]),arreglox)
-            for valor in cent:
-                clu.append(valor)
-        print("------------------------------")
-        print(clu)    
-        for val in clu:
-            clusters.append(val)
+        clu=loc.generarKmeans(int(kmop["clusters"]), int(kmop["iteraciones"]), float(kmop["tolerancia"]), float(kmop["state"]),arreglox)
+        for valor in clu:
+            clusters.append(valor)    
         clusters.append("/")
-    print("---------NUEVO----------")
-    processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
-    for x in range(len(processed)):
-        if '/' in processed[x]:
-            processed[x].remove('/')
-    print(processed)
+        print("---------NUEVO----------")
+        processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
+        for x in range(len(processed)):
+            if '/' in processed[x]:
+                processed[x].remove('/')
+        print("---------COMO----------")
+        print(processed)
     #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
     return render(request, 'kmeans.html',{"locaciones": locaciones,"kmeans":kmeans, "centros":list(processed)})
 
@@ -173,8 +171,8 @@ def eliminar(request,id):
 
 
 def eliminadoDefinitivo(request):
-  #poblacionesModelo.objects.all().delete()
-   #kmeansOpciones.objects.all().delete()
+   poblacionesModelo.objects.all().delete()
+   kmeansOpciones.objects.all().delete()
    franquicias.objects.all().delete()
 
    return redirect(inicio)

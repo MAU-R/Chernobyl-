@@ -9,21 +9,21 @@
     <div class="contenedor">
         <div class="mapon" id="map"></div>
         
-        <section class="controles">
+        <section  class="controles form-group">
             <form action="/crearPoblaciones/" method="get">
                 <label for="Rango">Rango de longitud</label><br/>
-                <input id="lngInicio" type="text" name="lngInicio" value="" placeholder="inico"><br/>
-                <input id="lngFinal" type="text" name="lngFinal" value="" placeholder="final"><hr/>
+                <input class="form-control" id="lngInicio" type="text" name="lngInicio" value="" placeholder="inico"><br/>
+                <input class="form-control" id="lngFinal" type="text" name="lngFinal" value="" placeholder="final"><hr/>
                 <label for="Rango">Rango de latitud</label><br/>
-                <input id="latInicio" type="text" name="latInicio" value="" placeholder="inico"><br/>
-                <input id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
+                <input class="form-control" id="latInicio" type="text" name="latInicio" value="" placeholder="inico"><br/>
+                <input class="form-control" id="latFinal" type="text" name="latFinal" value="" placeholder="final"><hr/>
                 <label for="cantidad">Cantidad</label><br/>
-                <input id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
+                <input class="form-control" id="cantidad" type="number" name="cantidad" value="" placeholder="000"><hr/>
                 <label for="">dispersion</label><br/>
-                <input id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
+                <input class="form-control" id="dispersion" type="text" name="dispersion" value="" placeholder="0.00"><hr/>
                 <label for="centros">centros</label><br/>
-                <input id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
-                <input type="submit" value="Agregar">
+                <input class="form-control" id="centros" type="number" min="0.000000001" name="centros" value="" placeholder="000"><hr/>
+                <input class="btn btn-primary" type="submit" value="Agregar">
             </form>
         </section>
     </div><br/><br/><br/><br/><hr/>
