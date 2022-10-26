@@ -1,52 +1,21 @@
+from concurrent.futures import process
 from django.shortcuts import render
 from multiprocessing import context
 from tkinter.messagebox import RETRY
 from django.shortcuts import render, HttpResponse, redirect
 from django.template import loader
+from matplotlib.pyplot import axis
+from sklearn import cluster
 from sklearn.datasets import make_blobs
 from .models import franquicias as franquicias, kmeansOpciones
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
 import numpy 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, cluster_optics_dbscan
 from django.views.decorators.csrf import csrf_exempt
-
-def generateLocations(cantidad,inicio,final, centeros, dispersion):
-    x, y = make_blobs(
-                  n_samples = cantidad, 
-                  n_features = 2, 
-                  centers = centeros,
-                  cluster_std=dispersion,
-                  shuffle= True,  
-                  center_box=(inicio,final),
-                   random_state = 0)
-    return x[:,0]
-
-
-def generateLocations2(cantidad,inicio,final,inicioln,finallng, centeros, dispersion):
-    x, y = make_blobs(
-                  n_samples = cantidad, 
-                  n_features = 2, 
-                  centers = centeros,
-                  cluster_std=dispersion,
-                  shuffle= True,  
-                  center_box=([inicio,inicioln],[final,finallng]),
-                   random_state = 0)
-    return x
-
-def generarKmeans(clusters, iteraciones, tolerancia, state):
-    km = KMeans(
-    n_clusters=clusters,
-    init='random',
-    max_iter=iteraciones,
-    tol=tolerancia, 
-    random_state=state
-    )
-
-    train_km = km.fit_predict(x)
-    train_km
-    return train_km
-
+from .Utils import Locations as loc
+from .Utils.plots import *
+from more_itertools import split_before
 
 # Create your views here.
 #
@@ -57,7 +26,12 @@ def inicio(request):
     return render(request, 'inicio.html')
 
 def ubicaciones(request):
-    print("lo iniciamos")
+    x=franquicias.objects.all()
+    print("Valores")
+    print(x.values())
+    if not x:
+        print("amonos")
+        loc.conseguirFranquiciasDeExcel()
     lista =  franquicias.objects.values()
     listo=list(lista)
     mydict= {
@@ -74,7 +48,7 @@ def agregarPoblaciones(request):
     cantidad=int(request.GET["cantidad"])
     centros=int(request.GET["centros"])
     dispersion=float(request.GET["centros"])
-    cordenadas=generateLocations2(cantidad, latInicio,latFInal,lngInicio,lngFInal,centros,dispersion)
+    cordenadas=loc.generateLocations2(cantidad, latInicio,latFInal,lngInicio,lngFInal,centros,dispersion)
     longitudes=cordenadas[:,1]
     latitudes=cordenadas[:,0]
     strlong = ','.join(str(x) for x in longitudes)
@@ -110,22 +84,57 @@ def poblaciones(request):
 
 
 def kmeans(request):
-    if(kmeansOpciones.objects.last()):
-        kmeans= kmeansOpciones.objects.last()
-    return render(request, 'kmeans.html')
+    locaciones=poblacionesModelo.objects.all()
+    kmeans= kmeansOpciones.objects.all()
+    listaKmeans=kmeans.values()
+    #print(locaciones.values()[1]["longitudes"])
+    clusters=[]
+    for kmop in listaKmeans:
+        clu=[]
+        for ubicacion in locaciones:
+            arreglox = []
+            latitudes = ubicacion.latitudes.split(",")
+            longitudes = ubicacion.longitudes.split(",")
+            for x in range(len(longitudes)):
+                arreglox.append([float(latitudes[x]), float(longitudes[x])])
+            cent=loc.generarKmeans(int(kmop["clusters"]), int(kmop["iteraciones"]), float(kmop["tolerancia"]), float(kmop["state"]),arreglox)
+            for valor in cent:
+                clu.append(valor)
+        print("------------------------------")
+        print(clu)    
+        for val in clu:
+            clusters.append(val)
+        clusters.append("/")
+    print("---------NUEVO----------")
+    processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
+    for x in range(len(processed)):
+        if '/' in processed[x]:
+            processed[x].remove('/')
+    print(processed)
+    #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
+    return render(request, 'kmeans.html',{"locaciones": locaciones,"kmeans":kmeans, "centros":list(processed)})
 
 
-def metricas(request):
-    PDB = pd.read_csv("apptest/database/pizzahut.csv")
-    PDBTypes = PDB [['type','state']]
-    PDBTypes1 =  PDBTypes[(PDBTypes['type'] == "Pizza Hut")]
-    Conteo = PDBTypes1.value_counts(PDBTypes1["state"])
-    ContDF = pd.DataFrame(Conteo)
-
-    mydict2 ={
-        'dfTypes': ContDF.to_html()
+def graficas(request):
+    df = franquicias.objects.all()
+    x1 = [x.longitude for x in df]
+    x2 = [x.latitud for x in df]
+    labels1 = []
+    sizes1 = []
+    labels2 = []
+    sizes2 = []
+    longitude = get_longitude(x1)
+    latitude = get_latitude(x2)
+    code = get_codes(labels1, sizes1)
+    transport = get_transport(labels2, sizes2)
+    
+    mydict = {
+        'longitude': longitude, 
+        'latitude': latitude,
+        'code': code,
+        'transport': transport
     }
-    return render(request,"metricas.html", context=mydict2)
+    return render (request, 'graficas.html', context=mydict)
   
 
 #http://127.0.0.1:8000/crearUbicacion/color/mau/aqui/10/10
@@ -164,7 +173,8 @@ def eliminar(request,id):
 
 
 def eliminadoDefinitivo(request):
-   pobs=poblacionesModelo.objects.all().delete()
-   k=kmeansOpciones.objects.all().delete()
+  #poblacionesModelo.objects.all().delete()
+   #kmeansOpciones.objects.all().delete()
+   franquicias.objects.all().delete()
 
    return redirect(inicio)

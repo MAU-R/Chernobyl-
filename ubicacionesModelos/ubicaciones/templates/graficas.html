@@ -1,0 +1,19 @@
+{% extends 'layout.html'%}
+
+{%block title%}Metricas{%endblock%}
+
+{%block content%}
+<h1>Pagina de graficas</h1>
+<style>
+    .contenedor-graficas{
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+</style>
+<div class="contenedo-graficas">
+<img class="img-responsive" src="data:image/png;base64, {{longitude|safe}}">
+<img class="img-responsive" src="data:image/png;base64, {{latitude|safe}}">
+</div>
+{{dfTypes | safe}}
+{%endblock%}
