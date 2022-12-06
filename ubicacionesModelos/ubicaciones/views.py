@@ -7,16 +7,16 @@ from django.template import loader
 from matplotlib.pyplot import axis
 from sklearn import cluster
 from sklearn.datasets import make_blobs
-from .models import franquicias as franquicias, kmeansOpciones
+from .models import franquicias as franquicias, kmeansOpciones, KmeansEncuestaOpciones, svmoptions
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
 import numpy 
 from sklearn.cluster import KMeans, cluster_optics_dbscan
 from django.views.decorators.csrf import csrf_exempt
 from .Utils import Locations as loc
+
 from .Utils.plots import *
 from more_itertools import split_before
-
 # Create your views here.
 #
 def index(request):
@@ -77,6 +77,22 @@ def crearKmeans(request):
     kmeansModelo.save()
     return redirect(kmeans)
 
+@csrf_exempt
+def crearKmeansenc(request):
+    print("creamos kmeans encuesta")
+    clusters=int(request.POST["numero"])
+    iteraciones=int(request.POST["iteraciones"])
+    tolerancia=float(request.POST["tolerancia"])
+    state=int(request.POST["state"])
+
+    kmeansModelo=KmeansEncuestaOpciones(
+    clusters=clusters,
+    tolerancia=tolerancia,
+    iteraciones=iteraciones,
+    state=state
+    )
+    kmeansModelo.save()
+    return redirect(kmeansenc)
 
 def poblaciones(request):
     locaciones=poblacionesModelo.objects.all()
@@ -102,7 +118,7 @@ def kmeans(request):
         for valor in clu:
             clusters.append(valor)    
         clusters.append("/")
-        print("---------NUEVO----------")
+        #print("---------NUEVO----------")
         processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
         for x in range(len(processed)):
             if '/' in processed[x]:
@@ -176,3 +192,50 @@ def eliminadoDefinitivo(request):
    franquicias.objects.all().delete()
 
    return redirect(inicio)
+
+
+def kmeansenc(request):
+
+    datos= loc.datosEncuestas()
+    kmeans=KmeansEncuestaOpciones.objects.all().order_by('-id')[0]
+    
+    trained, ubicaciones, graph=loc.trainEncuesta(datos, kmeans.clusters, kmeans.iteraciones, kmeans.tolerancia,kmeans.state)
+    Longitudes=[]
+    Latitudes=[]
+    for i in range(ubicaciones.shape[0]):
+        Longitudes.append(ubicaciones[i][0])
+        Latitudes.append(ubicaciones[i][1])
+    print(Latitudes)
+    #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
+    return render(request, 'kmeansenc.html', {"latitudes": Latitudes,"longitudes":Longitudes, "kmeans":trained, "elbow": graph})
+
+def svm(request):
+    svms=svmoptions.objects.all().order_by('-id')[0]
+    ubicaciones, svm= loc.generarSVM(svms.sueldo,svms.stream,svms.club,svms.gasto)
+    
+    Longitudes=[]
+    Latitudes=[]
+    clasificacion=[]
+    for i in range(ubicaciones.shape[0]):
+        Longitudes.append(ubicaciones[i][0])
+        Latitudes.append(ubicaciones[i][1])
+        clasificacion.append(svm[i])
+    return render(request, 'svm.html',{"latitudes": Latitudes,"longitudes":Longitudes,"svm":clasificacion})
+
+@csrf_exempt
+def crearsvm(request):
+    print("creamos kmeans encuesta")
+    sueldo=request.POST["sueldox"]
+    stream=request.POST["streamx"]
+    club=request.POST["clubx"]
+    gasto=request.POST["gastox"]
+    print("LLLEGAAAAAAAA")
+    print(club)
+    svmo=svmoptions(
+        sueldo=sueldo,
+        stream=stream,
+        club=club,
+        gasto=gasto
+    )
+    svmo.save()
+    return redirect(svm)
