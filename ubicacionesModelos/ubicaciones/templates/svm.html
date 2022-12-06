@@ -14,7 +14,11 @@
 <div class="maponx" id="map"></div>
 <div class="opciones">
   <form action="/crearsvm/" method="post">
-    <button class="btn btn-primary" id="sueldo" >Sueldo</button>
+    <input style="display: none;" id="sueldox" type="number" name="sueldox" value="1" placeholder="sueldo clusters">
+    <input style="display: none;" id="streamx" type="number" name="streamx" value="1" placeholder="stream clusters">
+    <input style="display: none;" id="clubx" type="number" name="clubx" value="1" placeholder="club clusters">
+    <input style="display: none;" id="gastox" type="number" name="gastox" value="1" placeholder="gasto clusters">
+    <button class="btn btn-primary" id="sueldo">sueldo</button>
     <button class="btn btn-primary"id="stream">Membresias streaming</button>
     <button class="btn btn-primary" id="clubes">Membresias clubes</button>
     <button class="btn btn-primary" id="gastos">Gasto en membresi</button>
@@ -64,6 +68,7 @@ window.initMap = initMap;
         activos[0]=true
         btnSueldo.classList.add("btn-primary")
         btnSueldo.classList.remove("btn-secondary")
+        sueldox.value=1
     }
   }
   var activos=[true, true, true, true]
@@ -71,15 +76,20 @@ window.initMap = initMap;
   btnstrem=document.getElementById("stream")
   btnclubes=document.getElementById("clubes")
   btngasto=document.getElementById("gastos")
-
+  sueldox=document.getElementById("sueldox")
+  streamx=document.getElementById("streamx")
+  clubx=document.getElementById("clubx")
+  gastox=document.getElementById("gastox")
   btnSueldo.onclick=function(e){
     e.preventDefault()
     if(activos[0]){
       this.classList.remove("btn-primary")
       this.classList.add("btn-secondary")
+      sueldox.value=0
     }else{
       this.classList.add("btn-primary")
       this.classList.remove("btn-secondary")
+      sueldox.value=1
     }
     activos[0]=!activos[0]
     check()
@@ -89,9 +99,11 @@ window.initMap = initMap;
     if(activos[1]){
       this.classList.remove("btn-primary")
       this.classList.add("btn-secondary")
+      streamx.value=0
     }else{
       this.classList.add("btn-primary")
       this.classList.remove("btn-secondary")
+      streamx.value=1
     }
     activos[1]=!activos[1]
     check()
@@ -101,9 +113,11 @@ window.initMap = initMap;
     if(activos[2]){
       this.classList.remove("btn-primary")
       this.classList.add("btn-secondary")
+      clubx.value=0
     }else{
       this.classList.add("btn-primary")
       this.classList.remove("btn-secondary")
+      clubx.value=1
     }
     activos[2]=!activos[2]
     check()
@@ -113,9 +127,11 @@ window.initMap = initMap;
     if(activos[3]){
       this.classList.remove("btn-primary")
       this.classList.add("btn-secondary")
+      gastox.value=0
     }else{
       this.classList.add("btn-primary")
       this.classList.remove("btn-secondary")
+      gastox.value=1
     }
     activos[3]=!activos[3]
     check()

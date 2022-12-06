@@ -35,3 +35,9 @@ class KmeansEncuestaOpciones(models.Model):
     tolerancia=models.FloatField()
     iteraciones=models.IntegerField()
     state=models.IntegerField()
+
+class svmoptions(models.Model):
+    sueldo=models.BooleanField()
+    stream=models.BooleanField()
+    club=models.BooleanField()
+    gasto=models.BooleanField()

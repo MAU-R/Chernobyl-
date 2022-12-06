@@ -105,7 +105,7 @@ def trainEncuesta(datos, clusters,iteraciones,tolerancia,state):
     graph = generarPlot(wcss)
     return train_km , X ,graph
 
-def generarSVM():
+def generarSVM(sueldo,stream,club,gasto):
     datos = pd.read_excel("ubicaciones/database/datitos.xlsx");
     x=shuffle(datos)
     import random
@@ -116,7 +116,18 @@ def generarSVM():
     y= x['clase'].values
     datos= []
     for j in range((x.shape[0])):
-        datos.append([x['Sueldo'][j],x['membresiasStreaming'][j],x['plataforma'][j], x['gastos'][j]])
+        app=[]
+        if(sueldo):
+            app.append(x['Sueldo'][j])
+        if(stream):
+            app.append(x['membresiasStreaming'][j])
+        if(club):
+            app.append(x['plataforma'][j])
+        if(gasto):
+            app.append(x['gastos'][j])
+        datos.append(app)
+    print("Funcionan los datos???? -               -- ---")
+    print(datos)
     x_train, x_test, y_train, y_test =train_test_split(datos, y, test_size=0.3, random_state=0,  shuffle=False)
     sc = StandardScaler()
     sc.fit(x_train)

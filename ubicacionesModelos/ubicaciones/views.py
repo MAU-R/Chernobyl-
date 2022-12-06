@@ -7,7 +7,7 @@ from django.template import loader
 from matplotlib.pyplot import axis
 from sklearn import cluster
 from sklearn.datasets import make_blobs
-from .models import franquicias as franquicias, kmeansOpciones, KmeansEncuestaOpciones
+from .models import franquicias as franquicias, kmeansOpciones, KmeansEncuestaOpciones, svmoptions
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
 import numpy 
@@ -210,8 +210,9 @@ def kmeansenc(request):
     return render(request, 'kmeansenc.html', {"latitudes": Latitudes,"longitudes":Longitudes, "kmeans":trained, "elbow": graph})
 
 def svm(request):
-
-    ubicaciones, svm= loc.generarSVM()
+    svms=svmoptions.objects.all().order_by('-id')[0]
+    ubicaciones, svm= loc.generarSVM(svms.sueldo,svms.stream,svms.club,svms.gasto)
+    
     Longitudes=[]
     Latitudes=[]
     clasificacion=[]
@@ -219,6 +220,22 @@ def svm(request):
         Longitudes.append(ubicaciones[i][0])
         Latitudes.append(ubicaciones[i][1])
         clasificacion.append(svm[i])
-    print("Latitudes aquisssssssssssssssssssssssssssssssssssssss")
-    print(clasificacion)
     return render(request, 'svm.html',{"latitudes": Latitudes,"longitudes":Longitudes,"svm":clasificacion})
+
+@csrf_exempt
+def crearsvm(request):
+    print("creamos kmeans encuesta")
+    sueldo=request.POST["sueldox"]
+    stream=request.POST["streamx"]
+    club=request.POST["clubx"]
+    gasto=request.POST["gastox"]
+    print("LLLEGAAAAAAAA")
+    print(club)
+    svmo=svmoptions(
+        sueldo=sueldo,
+        stream=stream,
+        club=club,
+        gasto=gasto
+    )
+    svmo.save()
+    return redirect(svm)
