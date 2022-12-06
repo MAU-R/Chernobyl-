@@ -26,6 +26,7 @@ urlpatterns = [
     path("poblaciones/", views.poblaciones, name="poblacion"),
     path("customMap/", views.kmeans, name="kmeans"),
     path("kmeansenc/", views.kmeansenc, name="kmeansenc"),
+    path("svm/", views.svm, name="svm"),
     path("graficas/", views.graficas, name="graficas"),
     path("crearPoblaciones/", views.agregarPoblaciones, name="crearPoblacion"),
     path("crearKmeans/", views.crearKmeans, name="crearKmeans"),
@@ -34,5 +35,6 @@ urlpatterns = [
     path("crearUbicacion/<str:color>/<str:nombre>/<str:descripcion>/<str:longitud>/<str:latitud>", views.crear_ubicacion, name="crear-ubicacion"),
     path("actualizar/<int:id>/<str:color>/<str:nombre>/<str:descripcion>/<str:longitud>/<str:latitud>", views.actualizar_ubicacion, name="crear-ubicacion"),
     path("eliminar/<int:id>",views.eliminar,name="eliminar")
+    
 
 ]

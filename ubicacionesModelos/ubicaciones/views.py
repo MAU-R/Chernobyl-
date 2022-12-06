@@ -195,6 +195,7 @@ def eliminadoDefinitivo(request):
 
 
 def kmeansenc(request):
+
     datos= loc.datosEncuestas()
     kmeans=KmeansEncuestaOpciones.objects.all().order_by('-id')[0]
     
@@ -207,3 +208,17 @@ def kmeansenc(request):
     print(Latitudes)
     #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
     return render(request, 'kmeansenc.html', {"latitudes": Latitudes,"longitudes":Longitudes, "kmeans":trained, "elbow": graph})
+
+def svm(request):
+
+    ubicaciones, svm= loc.generarSVM()
+    Longitudes=[]
+    Latitudes=[]
+    clasificacion=[]
+    for i in range(ubicaciones.shape[0]):
+        Longitudes.append(ubicaciones[i][0])
+        Latitudes.append(ubicaciones[i][1])
+        clasificacion.append(svm[i])
+    print("Latitudes aquisssssssssssssssssssssssssssssssssssssss")
+    print(clasificacion)
+    return render(request, 'svm.html',{"latitudes": Latitudes,"longitudes":Longitudes,"svm":clasificacion})

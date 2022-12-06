@@ -22,3 +22,21 @@ min-height: 80vh;
 .extend{
   grid-column: 1/2;
 }
+.maponx{
+  grid-column: 1/4;
+padding: 70px;
+min-width: 50vw;
+min-height: 60vh;
+}
+.opciones{
+  margin: 20px;
+  padding: 50px;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+.btn{
+  margin-right: auto;
+}

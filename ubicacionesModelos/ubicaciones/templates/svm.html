@@ -1,0 +1,137 @@
+{% extends 'layout.html'%}
+
+{%block title%}ubicaciones{%endblock%}
+{%load static%}
+{%block content%}
+
+<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNujXVEWnISL6MnLWmbx14bPGOMjfCtTU&callback=initMap">
+</script>
+<link rel="stylesheet" type = "text/css" href="{%static 'css/modulosKmeans.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+<div class="maponx" id="map"></div>
+<div class="opciones">
+  <form action="/crearsvm/" method="post">
+    <button class="btn btn-primary" id="sueldo" >Sueldo</button>
+    <button class="btn btn-primary"id="stream">Membresias streaming</button>
+    <button class="btn btn-primary" id="clubes">Membresias clubes</button>
+    <button class="btn btn-primary" id="gastos">Gasto en membresi</button>
+    <input class="btn btn-danger" type="submit" value="Modificar">
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    var iconos=["http://maps.google.com/mapfiles/ms/icons/green-dot.png","http://maps.google.com/mapfiles/ms/icons/yellow-dot.png","http://maps.google.com/mapfiles/ms/icons/blue-dot.png","http://maps.google.com/mapfiles/ms/icons/ltblue-dot.png","http://maps.google.com/mapfiles/ms/icons/orange-dot.png","http://maps.google.com/mapfiles/ms/icons/red-dot.png","http://maps.google.com/mapfiles/ms/icons/purple-dot.png","http://maps.google.com/mapfiles/ms/icons/pink-dot.png","http://maps.google.com/mapfiles/ms/icons/ylw-pushpin.png","http://maps.google.com/mapfiles/ms/icons/blue-pushpin.png","http://maps.google.com/mapfiles/ms/icons/grn-pushpin.png","http://maps.google.com/mapfiles/ms/icons/red-pushpin.png","http://maps.google.com/mapfiles/ms/icons/purple-pushpin.png","http://maps.google.com/mapfiles/ms/icons/pink-pushpin.png"]
+    // Initialize and add the map
+function initMap() {
+    console.log("aqui")
+    var latitudes ={{latitudes}}
+    var longitudes = {{longitudes}}
+    var kmeans = {{svm}}
+    console.log(latitudes)
+    
+  // The location of Uluru
+  const uluru = { lat: latitudes[0], lng: longitudes[0] };
+  // The map, centered at Uluru
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 4,
+    center: uluru,
+  });
+  // The marker, positioned at Uluru
+ for(var j=0; j<latitudes.length;j++){
+    var lat= latitudes[j]
+    var lng= longitudes[j]
+    const marker = new google.maps.Marker({
+    position: {lat,lng},
+    map: map,
+    icon: {
+           url: iconos[kmeans[j]]
+            }
+  });
+ }
+
+}
+
+window.initMap = initMap;
+</script>
+<script>
+    var check=()=>{
+    if(!activos.includes(true)){
+        activos[0]=true
+        btnSueldo.classList.add("btn-primary")
+        btnSueldo.classList.remove("btn-secondary")
+    }
+  }
+  var activos=[true, true, true, true]
+  btnSueldo=document.getElementById("sueldo")
+  btnstrem=document.getElementById("stream")
+  btnclubes=document.getElementById("clubes")
+  btngasto=document.getElementById("gastos")
+
+  btnSueldo.onclick=function(e){
+    e.preventDefault()
+    if(activos[0]){
+      this.classList.remove("btn-primary")
+      this.classList.add("btn-secondary")
+    }else{
+      this.classList.add("btn-primary")
+      this.classList.remove("btn-secondary")
+    }
+    activos[0]=!activos[0]
+    check()
+  }
+  btnstrem.onclick=function(e){
+    e.preventDefault()
+    if(activos[1]){
+      this.classList.remove("btn-primary")
+      this.classList.add("btn-secondary")
+    }else{
+      this.classList.add("btn-primary")
+      this.classList.remove("btn-secondary")
+    }
+    activos[1]=!activos[1]
+    check()
+  }
+  btnclubes.onclick=function(e){
+    e.preventDefault()
+    if(activos[2]){
+      this.classList.remove("btn-primary")
+      this.classList.add("btn-secondary")
+    }else{
+      this.classList.add("btn-primary")
+      this.classList.remove("btn-secondary")
+    }
+    activos[2]=!activos[2]
+    check()
+  }
+  btngasto.onclick=function(e){
+    e.preventDefault()
+    if(activos[3]){
+      this.classList.remove("btn-primary")
+      this.classList.add("btn-secondary")
+    }else{
+      this.classList.add("btn-primary")
+      this.classList.remove("btn-secondary")
+    }
+    activos[3]=!activos[3]
+    check()
+  }
+
+  var estado = function(e,x){
+    e.preventDefault()
+    if(activos[x]){
+      this.classList.remove("btn-primary")
+      this.classList.add("btn-secondary")
+    }else{
+      this.classList.add("btn-primary")
+      this.classList.remove("btn-secondary")
+    }
+    activos[x]=!activos[x]
+    check()
+  }
+</script>
+{%endblock%}

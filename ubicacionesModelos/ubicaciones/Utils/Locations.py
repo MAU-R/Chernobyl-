@@ -7,6 +7,10 @@ from ubicaciones.models import franquicias
 import seaborn as sns
 import base64
 from io import BytesIO
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.utils import shuffle
 
 def generateLocations(cantidad,lngInicio, lngFinal, latInicio, latFinal, centers, dispersion):
     x, y = make_blobs(n_samples = cantidad, 
@@ -61,9 +65,6 @@ def conseguirFranquiciasDeExcel():
 def datosEncuestas():
     datos = pd.read_excel("ubicaciones/database/datitos.xlsx");
     X=datos.iloc[:, [13,14]]
-    
-    
-
     return datos
 def generarElbow(X):
     wcss = []
@@ -93,6 +94,7 @@ def generarPlot(wcss):
     return grap
 
 def trainEncuesta(datos, clusters,iteraciones,tolerancia,state):
+
     X=datos.iloc[:, [13,14]]
     import random
     for i in range(138):
@@ -102,3 +104,27 @@ def trainEncuesta(datos, clusters,iteraciones,tolerancia,state):
     train_km, wcss = generarKmeans(clusters, iteraciones, tolerancia,state, X)
     graph = generarPlot(wcss)
     return train_km , X ,graph
+
+def generarSVM():
+    datos = pd.read_excel("ubicaciones/database/datitos.xlsx");
+    x=shuffle(datos)
+    import random
+    for i in range(138):
+        x['Latitud'][i]=(x['Latitud'][i]-random.uniform(0.01000, 0.00010))
+        x['Longitud'][i]=(x['Longitud'][i]-random.uniform(0.01000, 0.00010))
+    X=x.iloc[0:97, [13,14]].values
+    y= x['clase'].values
+    datos= []
+    for j in range((x.shape[0])):
+        datos.append([x['Sueldo'][j],x['membresiasStreaming'][j],x['plataforma'][j], x['gastos'][j]])
+    x_train, x_test, y_train, y_test =train_test_split(datos, y, test_size=0.3, random_state=0,  shuffle=False)
+    sc = StandardScaler()
+    sc.fit(x_train)
+    x_train_std = sc.transform(x_train)
+    x_test_std = sc.transform(x_test)
+    x_train_std
+    svc = SVC(C=1.0, random_state=1, kernel='linear')
+    # Entrenar modelo
+    svc.fit(x_train_std, y_train)
+    y_predict = svc.predict(x_train_std)
+    return X, y_predict
