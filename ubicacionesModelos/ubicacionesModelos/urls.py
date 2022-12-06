@@ -25,6 +25,7 @@ urlpatterns = [
     path("ubicaciones/", views.ubicaciones, name="ubicaciones"),
     path("poblaciones/", views.poblaciones, name="poblacion"),
     path("customMap/", views.kmeans, name="kmeans"),
+    path("kmeansenc/", views.kmeansenc, name="kmeansenc"),
     path("graficas/", views.graficas, name="graficas"),
     path("crearPoblaciones/", views.agregarPoblaciones, name="crearPoblacion"),
     path("crearKmeans/", views.crearKmeans, name="crearKmeans"),

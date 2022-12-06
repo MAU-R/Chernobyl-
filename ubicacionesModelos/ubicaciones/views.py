@@ -14,9 +14,9 @@ import numpy
 from sklearn.cluster import KMeans, cluster_optics_dbscan
 from django.views.decorators.csrf import csrf_exempt
 from .Utils import Locations as loc
+
 from .Utils.plots import *
 from more_itertools import split_before
-
 # Create your views here.
 #
 def index(request):
@@ -176,3 +176,37 @@ def eliminadoDefinitivo(request):
    franquicias.objects.all().delete()
 
    return redirect(inicio)
+
+
+def kmeansenc(request):
+    datos= loc.datosEncuestas()
+    clusters=int(request.POST["numero"])
+    iteraciones=int(request.POST["iteraciones"])
+    tolerancia=float(request.POST["tolerancia"])
+    state=int(request.POST["state"])
+
+
+    #print(locaciones.values()[1]["longitudes"])
+    clusters=[]
+    processed=[]
+    for kmop in listaKmeans:
+        clu=[]
+        arreglox = []
+        for ubicacion in locaciones:
+            latitudes = ubicacion.latitudes.split(",")
+            longitudes = ubicacion.longitudes.split(",")
+            for x in range(len(longitudes)):
+                arreglox.append([float(latitudes[x]), float(longitudes[x])])
+        clu=loc.generarKmeans(int(kmop["clusters"]), int(kmop["iteraciones"]), float(kmop["tolerancia"]), float(kmop["state"]),arreglox)
+        for valor in clu:
+            clusters.append(valor)    
+        clusters.append("/")
+        print("---------NUEVO----------")
+        processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
+        for x in range(len(processed)):
+            if '/' in processed[x]:
+                processed[x].remove('/')
+        print("---------COMO----------")
+        print(processed)
+    #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
+    return render(request, 'kmeans.html',{"locaciones": locaciones,"kmeans":kmeans, "centros":list(processed)})
