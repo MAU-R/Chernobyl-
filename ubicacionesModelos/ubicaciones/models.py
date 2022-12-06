@@ -29,4 +29,9 @@ class kmeansOpciones(models.Model):
 class detalleKPoblaciones(models.Model):
     idPoblacion=models.IntegerField()
     idKmeans=models.IntegerField()
-    
+
+class KmeansEncuestaOpciones(models.Model):
+    clusters=models.IntegerField()
+    tolerancia=models.FloatField()
+    iteraciones=models.IntegerField()
+    state=models.IntegerField()

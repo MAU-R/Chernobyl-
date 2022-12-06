@@ -7,7 +7,7 @@ from django.template import loader
 from matplotlib.pyplot import axis
 from sklearn import cluster
 from sklearn.datasets import make_blobs
-from .models import franquicias as franquicias, kmeansOpciones
+from .models import franquicias as franquicias, kmeansOpciones, KmeansEncuestaOpciones
 from .models import poblaciones as poblacionesModelo
 import pandas as pd
 import numpy 
@@ -77,6 +77,22 @@ def crearKmeans(request):
     kmeansModelo.save()
     return redirect(kmeans)
 
+@csrf_exempt
+def crearKmeansenc(request):
+    print("creamos kmeans encuesta")
+    clusters=int(request.POST["numero"])
+    iteraciones=int(request.POST["iteraciones"])
+    tolerancia=float(request.POST["tolerancia"])
+    state=int(request.POST["state"])
+
+    kmeansModelo=KmeansEncuestaOpciones(
+    clusters=clusters,
+    tolerancia=tolerancia,
+    iteraciones=iteraciones,
+    state=state
+    )
+    kmeansModelo.save()
+    return redirect(kmeansenc)
 
 def poblaciones(request):
     locaciones=poblacionesModelo.objects.all()
@@ -102,7 +118,7 @@ def kmeans(request):
         for valor in clu:
             clusters.append(valor)    
         clusters.append("/")
-        print("---------NUEVO----------")
+        #print("---------NUEVO----------")
         processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
         for x in range(len(processed)):
             if '/' in processed[x]:
@@ -180,33 +196,14 @@ def eliminadoDefinitivo(request):
 
 def kmeansenc(request):
     datos= loc.datosEncuestas()
-    clusters=int(request.POST["numero"])
-    iteraciones=int(request.POST["iteraciones"])
-    tolerancia=float(request.POST["tolerancia"])
-    state=int(request.POST["state"])
-
-
-    #print(locaciones.values()[1]["longitudes"])
-    clusters=[]
-    processed=[]
-    for kmop in listaKmeans:
-        clu=[]
-        arreglox = []
-        for ubicacion in locaciones:
-            latitudes = ubicacion.latitudes.split(",")
-            longitudes = ubicacion.longitudes.split(",")
-            for x in range(len(longitudes)):
-                arreglox.append([float(latitudes[x]), float(longitudes[x])])
-        clu=loc.generarKmeans(int(kmop["clusters"]), int(kmop["iteraciones"]), float(kmop["tolerancia"]), float(kmop["state"]),arreglox)
-        for valor in clu:
-            clusters.append(valor)    
-        clusters.append("/")
-        print("---------NUEVO----------")
-        processed = [sublist for sublist in split_before(clusters, lambda i: i == '/')]
-        for x in range(len(processed)):
-            if '/' in processed[x]:
-                processed[x].remove('/')
-        print("---------COMO----------")
-        print(processed)
+    kmeans=KmeansEncuestaOpciones.objects.all().order_by('-id')[0]
+    
+    trained, ubicaciones, graph=loc.trainEncuesta(datos, kmeans.clusters, kmeans.iteraciones, kmeans.tolerancia,kmeans.state)
+    Longitudes=[]
+    Latitudes=[]
+    for i in range(ubicaciones.shape[0]):
+        Longitudes.append(ubicaciones[i][0])
+        Latitudes.append(ubicaciones[i][1])
+    print(Latitudes)
     #clusters= loc.generarKmeans(clusters, iteraciones, tolerancia, state, x)
-    return render(request, 'kmeans.html',{"locaciones": locaciones,"kmeans":kmeans, "centros":list(processed)})
+    return render(request, 'kmeansenc.html', {"latitudes": Latitudes,"longitudes":Longitudes, "kmeans":trained, "elbow": graph})
